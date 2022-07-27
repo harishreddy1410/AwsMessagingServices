@@ -5,7 +5,7 @@
 .
 ├── README.MD        <-- This instructions file
 ├── sqs              <-- Creates and integrates an SQS queue with a Lambda function to send message and pick it from queue
-├── sns              <-- 
+├── sns              <-- Create lambda which publishes a SNS topic and fan-out the topic across multiple consumers(subscribers)
 ```
 
 ## Pre-Requisites
