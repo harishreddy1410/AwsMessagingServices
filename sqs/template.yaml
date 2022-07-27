@@ -1,0 +1,47 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Messaging sqs example
+
+Resources:
+  SqsQueue:
+    Type: AWS::SQS::Queue
+
+  SQSPublisherFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: code/
+      Handler: publisher.handler
+      Runtime: nodejs12.x
+      Timeout: 3
+      MemorySize: 128
+      Environment: 
+        Variables: 
+          SQSqueueName: !Ref SqsQueue
+      Policies:
+        - SQSSendMessagePolicy: # !IMPORANT -- Send message to queue
+            QueueName: !GetAtt SqsQueue.QueueName
+  SQSConsumerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: code/
+      Handler: consumer.handler
+      Runtime: nodejs12.x
+      Timeout: 3
+      MemorySize: 128
+      Policies:
+        - SQSPollerPolicy: # !IMPORANT -- Picks poll message from queue
+            QueueName: !GetAtt SqsQueue.QueueName
+      Events:
+        MySQSEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt SqsQueue.Arn
+            BatchSize: 10
+
+Outputs:
+  SQSPublisherFunction:
+    Description: SQSPublisherFunction function name
+    Value: !Ref SQSPublisherFunction
+  SQSConsumerFunction:
+    Description: Consumer function name 
+    Value: !Ref SQSConsumerFunction

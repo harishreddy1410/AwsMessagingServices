@@ -1,0 +1,11 @@
+{
+  "name": "sqs",
+  "version": "1.0.0",
+  "description": "The examples in this repo are used in related messaging blog posts. You can read the blog posts at: - https://aws.amazon.com/blogs/compute/choosing-between-messaging-services-for-serverless-applications/ - https://aws.amazon.com/blogs/compute/building-resilient-no-code-serverless-patterns-by-combining-messaging-services/",
+  "main": "publisher.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
