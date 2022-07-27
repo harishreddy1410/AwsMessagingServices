@@ -5,7 +5,7 @@
 .
 ├── README.MD        <-- This instructions file
 ├── sqs              <-- Creates and integrates an SQS queue with a Lambda function to send message and pick it from queue
-
+├── sns              <-- 
 ```
 
 ## Pre-Requisites

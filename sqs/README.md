@@ -5,9 +5,7 @@
 ## Below are the commands used to build and deploy the SQS Lambda's
 
 `sam build`
-`sam package --template-file template.yaml --output-template-file package.yml --s3-bucket postcodesvcbuildatrifacts --profile developertwo`
 `sam deploy --guided --profile developertwo`
 
 `sam build`
-`sam package --template-file template.yaml --output-template-file package.yml --s3-bucket postcodesvcbuildatrifacts --profile developertwo`
 `sam deploy --profile developertwo`

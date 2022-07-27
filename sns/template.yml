@@ -1,0 +1,71 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: SNS in AWS Messaging service 
+
+Resources:
+  SomeSNSTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      Subscription:
+        - Protocol: lambda
+          Endpoint: !GetAtt TopicConsumerFunctionOne.Arn
+        - Protocol: lambda
+          Endpoint: !GetAtt TopicConsumerFunctionTwo.Arn 
+
+  TopicPublisherLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: code/
+      Runtime: nodejs12.x
+      Handler: publisher.handler
+      Timeout: 3
+      MemorySize: 128
+      Environment:
+        Variables:
+          SNSTopicName: !Ref SomeSNSTopic
+      Policies:
+        - SNSPublishMessagePolicy:
+            TopicName: !GetAtt SomeSNSTopic.TopicName
+ 
+  TopicConsumerFunctionOne:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: code/
+      Handler: consumer.handler
+      Runtime: nodejs12.x
+      Timeout: 3
+      MemorySize: 128
+
+  TopicConsumerFunctionTwo:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: code/
+      Handler: consumer.handler
+      Runtime: nodejs12.x
+      Timeout: 3
+      MemorySize: 128
+
+  TopicConsumerFunctionOnePermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      FunctionName: !Ref TopicConsumerFunctionOne
+      Principal: sns.amazonaws.com
+
+  TopicConsumerFunctionTwoPermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      FunctionName: !Ref TopicConsumerFunctionTwo
+      Principal: sns.amazonaws.com
+
+Outputs:
+  TopicPublisherLambda:
+    Description: Lambda used to publish a message to SNS
+    Value: !Ref TopicPublisherLambda
+  TopicPublisherLambdaAtt:
+    Description: Lambda used to publish a message to SNS
+    Value: !GetAtt TopicPublisherLambda.Arn
+  SomeSNSTopic:
+    Description: SNS Topic name created
+    Value: !Ref SomeSNSTopic
