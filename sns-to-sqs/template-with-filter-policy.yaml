@@ -1,0 +1,49 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Yaml for publishing topic from SNS to SQS with filters
+
+Resources:
+  TestSqsQueue:
+    Type: AWS::SQS::Queue
+  
+  TestSnsTopic:
+    Type: AWS::SNS::Topic
+
+  SnsSubscriptions:
+    Type: AWS::SNS::Subscription
+    Properties:
+      Protocol: sqs
+      TopicArn: !Ref TestSnsTopic
+      Endpoint: !GetAtt TestSqsQueue.Arn
+      FilterPolicy:
+        type:
+          - carts
+          - orders
+          - payments
+      RawMessageDelivery: true
+
+  # Policy to allow SNS to publish to the respective queue
+  AllowSnsToSqsPolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      PolicyDocument: 
+        Version: "2012-10-17"
+        Statement:
+          - Sid: "Allow SNS publish to SQS"
+            Effect: Allow
+            Principal: "*"
+            Resource: !GetAtt TestSqsQueue.Arn
+            Action: SQS:SendMessage
+            Condition:
+              ArnEquals:
+                aws:SourceArn: !Ref TestSnsTopic
+      Queues:
+        - Ref: TestSqsQueue
+
+Outputs:
+  TestSnsTopicName:
+    Description: SNS Topic name created
+    Value: !GetAtt TestSnsTopic.TopicName
+  TestSqsName:
+    Description: SQS queue name
+    Value: !GetAtt TestSqsQueue.QueueName
