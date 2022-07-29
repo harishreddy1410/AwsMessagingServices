@@ -1,0 +1,56 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Eventbridge demonstration
+Resources:
+  EventConsumerLambdaFunctionOne:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: EventConsumerLambdaFunctionOne
+      Handler: consumer.handler
+      Runtime: nodejs12.x
+      Timeout: 3
+    Metadata:
+      SamResourceId: EventConsumerLambdaFunctionOne
+  EventPublisherLambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: EventPublisherLambdaFunction
+      Handler: publisher.handler
+      Timeout: 3
+      Runtime: nodejs12.x
+      Policies:
+      - Statement:
+        - Effect: Allow
+          Resource: '*'
+          Action:
+          - events:PutEvents
+    Metadata:
+      SamResourceId: EventPublisherLambdaFunction
+  EventRuleCaseOne:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: Eventbridge rule to consume the published event
+      EventPattern:
+        source:
+        - recordcreated.event
+        detail:
+          state:
+          - new
+      State: ENABLED
+      Targets:
+      - Arn:
+          Fn::GetAtt:
+          - EventConsumerLambdaFunctionOne
+          - Arn
+        Id: ConsumerOne
+  PermissionForEventsToInvokeLambda:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName:
+        Ref: EventConsumerLambdaFunctionOne
+      Principal: events.amazonaws.com
+      SourceArn:
+        Fn::GetAtt:
+        - EventRuleCaseOne
+        - Arn
