@@ -1,0 +1,7 @@
+[
+    {
+      "Source": "event.sns",
+      "DetailType": "event",
+      "Detail": "{ \"key1\": \"value1\", \"key2\": \"value2\" }"
+    }
+  ]
