@@ -1,0 +1,55 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Eventbridge to invoke SQS
+
+Resources:
+  TestSqsQueue:
+    Type: AWS::SQS::Queue
+
+  EventbridgeRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "Eventrule"
+      EventBusName: "default"
+      EventPattern:
+        account: 
+          - !Sub '${AWS::AccountId}'
+        source: 
+          - "any.event"
+      Targets:
+        - Arn: !GetAtt TestSqsQueue.Arn
+          Id : MyTestSqsQueue
+#Allow eventbridge to invoke SQS
+  TestSqsQueuePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      PolicyDocument:
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: events.amazonaws.com
+          Action: SQS:SendMessage
+          Resource: !GetAtt TestSqsQueue.Arn
+      Queues:
+        - !Ref TestSqsQueue
+
+  ConsumerQueueFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: code/
+      Handler: consumer.handler
+      Runtime: nodejs12.x
+      MemorySize: 128
+      Policies: 
+        - SQSPollerPolicy:
+            QueueName: !GetAtt TestSqsQueue.QueueName
+      Events:
+        MySQSEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt TestSqsQueue.Arn
+            BatchSize: 5
+Outputs:
+  ConsumerQueueFunction:
+    Description: ConsumerQueueFunction function name
+    Value: !Ref ConsumerQueueFunction

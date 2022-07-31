@@ -1,0 +1,12 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "eventbridge-sqs-demo"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-2647npur4ct5"
+s3_prefix = "eventbridge-sqs-demo"
+region = "us-east-1"
+profile = "developertwo"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+image_repositories = []
