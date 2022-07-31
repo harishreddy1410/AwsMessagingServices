@@ -6,6 +6,10 @@
 ├── README.MD        <-- This instructions file
 ├── sqs              <-- Creates and integrates an SQS queue with a Lambda function to send message and pick it from queue
 ├── sns              <-- Create lambda which publishes a SNS topic and fan-out the topic across multiple consumers(subscribers)
+└── eventbridge      <-- Creates an EventBridge rule with a Lambda function as a target
+└── sns-to-sqs          <-- Subscribes an SQS queue to an SNS topic
+└── eventbridge-to-sns  <-- Creates an EventBridge rule with an SNS topic as a target
+└── eventbridge-to-sqs  <-- Creates an EventBridge rule with an SQS queue as a target
 ```
 
 ## Pre-Requisites
